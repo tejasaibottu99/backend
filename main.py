@@ -9,6 +9,14 @@ from collections import Counter, defaultdict
 # Single FastAPI app instance
 app = FastAPI()
 
+@app.get("/")
+def healthcheck():
+    return {"status": "ok"}
+
+@app.head("/")
+def healthcheck_head():
+    return Response(status_code=200)
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,

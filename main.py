@@ -5,9 +5,11 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import re
 from collections import Counter, defaultdict
+from typing import Dict, List, Optional
+import json
 
 # Single FastAPI app instance
-app = FastAPI()
+app = FastAPI(title="Healthcare Cryptography API", version="1.0.0")
 
 @app.get("/")
 def healthcheck():
@@ -26,8 +28,88 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load and process CSV data for apps4 endpoints
+def load_csv_data():
+    """Load both CSV files and create lookup dictionaries"""
+    try:
+        # Load the algorithm details CSV (data3)
+        algorithm_df = pd.read_csv('data3.csv')
+        
+        # Load the applications CSV (data4)
+        applications_df = pd.read_csv('data4.csv')
+        
+        # Create algorithm lookup dictionary
+        algorithm_lookup = {}
+        for _, row in algorithm_df.iterrows():
+            algorithm_lookup[row['Algorithm_Name']] = {
+                'name': row['Algorithm_Name'],
+                'section': row['Section'],
+                'category': row['Category'],
+                'variant': row['Variant'],
+                'purpose': row['Purpose'],
+                'usage_context': row['Usage_Context'],
+                'status_today': row['Status_Today'],
+                'pqc_status': row['PQC_Status'],
+                'priority': row['Priority'],
+                'classical_recommended': row['Classical_Recommended'],
+                'quantum_recommended': row['Quantum_Recommended'],
+                'nist_reference': row['NIST_Reference'],
+                'notes': row['Notes']
+            }
+        
+        return applications_df, algorithm_lookup
+    except FileNotFoundError:
+        raise HTTPException(status_code=500, detail="CSV files not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading data: {str(e)}")
+
+# Global variables to store data
+try:
+    applications_df, algorithm_lookup = load_csv_data()
+except:
+    # Initialize empty data structures if files don't exist
+    applications_df = pd.DataFrame()
+    algorithm_lookup = {}
+
+def parse_algorithms(algorithm_string):
+    """Parse comma-separated algorithms from CSV cell"""
+    if pd.isna(algorithm_string) or algorithm_string.strip() == '':
+        return []
+    return [algo.strip() for algo in str(algorithm_string).split(',')]
+
+def get_algorithm_details(algorithm_name):
+    """Get detailed information about a specific algorithm"""
+    if algorithm_name in algorithm_lookup:
+        return algorithm_lookup[algorithm_name]
+    else:
+        return {
+            'name': algorithm_name,
+            'section': 'Unknown',
+            'category': 'Unknown',
+            'variant': 'Unknown',
+            'purpose': 'Unknown',
+            'usage_context': 'Unknown',
+            'status_today': 'Unknown',
+            'pqc_status': 'Unknown',
+            'priority': 'Unknown',
+            'classical_recommended': 'Unknown',
+            'quantum_recommended': 'Unknown',
+            'nist_reference': 'Unknown',
+            'notes': 'Algorithm details not found in database'
+        }
+
+def split_and_clean(cell_content):
+    """Splits a string by semicolon or comma, cleans whitespace, and removes empty strings."""
+    if not isinstance(cell_content, str):
+        return []
+    # Split by semicolon or comma and clean up each item
+    items = re.split(r'[;,]', cell_content)
+    return [item.strip() for item in items if item and item.strip()]
+
+# ENDPOINT 1: Original apps endpoint
 @app.get("/api/apps")
 def get_apps():
+    """Get applications with PQC readiness analysis"""
     # 1) Load CSV data
     try:
         usecols = [
@@ -215,20 +297,12 @@ def get_apps():
         return out
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Response formatting error: {e}")
-    
 
-def split_and_clean(cell_content):
-    """Splits a string by semicolon or comma, cleans whitespace, and removes empty strings."""
-    if not isinstance(cell_content, str):
-        return []
-    # Split by semicolon or comma and clean up each item
-    items = re.split(r'[;,]', cell_content)
-    return [item.strip() for item in items if item and item.strip()]
-
+# ENDPOINT 2: Algorithm usage analysis
 @app.get("/api/apps2")
 def get_algorithm_usage():
     """
-    Analyzes algorithm usage from two CSV files (data.csv and algorithms.csv).
+    Analyzes algorithm usage from two CSV files (data.csv and data2.csv).
 
     This endpoint calculates the net usage of each algorithm by subtracting the
     number of times it was changed from its total usage count across all applications.
@@ -241,7 +315,7 @@ def get_algorithm_usage():
         df_data = pd.read_csv("data.csv", engine="python", on_bad_lines="skip").fillna('')
         df_algos = pd.read_csv("data2.csv", engine="python", on_bad_lines="skip").fillna('')
     except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=f"Error: {e}. Make sure 'data.csv' and 'algorithms.csv' are in the same directory.")
+        raise HTTPException(status_code=404, detail=f"Error: {e}. Make sure 'data.csv' and 'data2.csv' are in the same directory.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while reading the CSV files: {e}")
 
@@ -251,7 +325,6 @@ def get_algorithm_usage():
     algorithm_to_apps_map = defaultdict(list)
     # This dictionary will map each algorithm to its NIST compliance status
     algorithm_nist_status = defaultdict(bool)
-
 
     for _, row in df_data.iterrows():
         # Combine algorithms and certificates into a single list for usage counting
@@ -266,7 +339,6 @@ def get_algorithm_usage():
             # If any application using this algorithm is NIST compliant, we mark the algorithm as such.
             if is_nist_compliant:
                 algorithm_nist_status[item] = True
-
 
     # Step 3: Calculate how many times each algorithm/certificate was changed/replaced
     changed_counts = Counter()
@@ -306,3 +378,308 @@ def get_algorithm_usage():
         raise HTTPException(status_code=404, detail="No active algorithm usage found based on the provided data.")
 
     return final_results
+
+# ENDPOINT 3: Complete data3 file
+@app.get("/api/apps3")
+def get_full_data3_data():
+    """
+    Returns the complete data3 file data as JSON without any calculations or transformations.
+    
+    This endpoint simply reads the data3.csv file and returns all rows and columns
+    as a JSON array of objects, with each object representing a row from the CSV.
+    """
+    try:
+        # Load the data3 file without any column restrictions
+        df_data3 = pd.read_csv("data3.csv", engine="python", on_bad_lines="skip")
+        
+        # Fill NaN values with empty strings for cleaner JSON output
+        df_data3 = df_data3.fillna("")
+        
+        # Convert DataFrame to list of dictionaries (JSON format)
+        data3_data = df_data3.to_dict(orient="records")
+        
+        return {
+            "status": "success",
+            "total_records": len(data3_data),
+            "data": data3_data
+        }
+        
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=404, 
+            detail="data3 file not found. Make sure 'data3.csv' exists in the same directory."
+        )
+    except pd.errors.EmptyDataError:
+        raise HTTPException(
+            status_code=400, 
+            detail="data3 file is empty or contains no valid data."
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"An error occurred while reading the data3 file: {str(e)}"
+        )
+
+# ENDPOINT 4: All applications with complete details
+@app.get("/api/apps4")
+def get_all_applications():
+    """Get all applications with complete details"""
+    try:
+        if applications_df.empty:
+            raise HTTPException(status_code=404, detail="Applications data not available. Check if data4.csv exists.")
+            
+        all_applications = []
+        
+        for _, app_row in applications_df.iterrows():
+            application_name = app_row['Application']
+            
+            # Structure the response with all 5 sections
+            sections = {
+                'Symmetric Algorithms': [],
+                'Asymmetric Algorithms': [],
+                'Hash Functions': [],
+                'MACs & KDFs': [],
+                'Post-Quantum Cryptography': []
+            }
+            
+            # Process each section
+            for section in sections.keys():
+                if section in app_row and not pd.isna(app_row[section]):
+                    algorithms = parse_algorithms(app_row[section])
+                    
+                    for algo in algorithms:
+                        algo_details = get_algorithm_details(algo)
+                        sections[section].append(algo_details)
+            
+            application_data = {
+                "application": application_name,
+                "cryptographic_profile": sections,
+                "summary": {
+                    "total_algorithms": sum(len(algos) for algos in sections.values()),
+                    "sections_with_algorithms": len([s for s in sections.values() if s]),
+                    "sections_breakdown": {section: len(algos) for section, algos in sections.items()}
+                }
+            }
+            
+            all_applications.append(application_data)
+        
+        return {
+            "status": "success",
+            "count": len(all_applications),
+            "applications": all_applications
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving applications: {str(e)}")
+
+# ENDPOINT 5: Specific application details
+@app.get("/applications/{application_name}")
+def get_application_details(application_name: str):
+    """Get detailed cryptographic information for a specific application"""
+    try:
+        if applications_df.empty:
+            raise HTTPException(status_code=404, detail="Applications data not available. Check if data4.csv exists.")
+            
+        # Find the application in the dataframe
+        app_row = applications_df[applications_df['Application'] == application_name]
+        
+        if app_row.empty:
+            raise HTTPException(status_code=404, detail=f"Application '{application_name}' not found")
+        
+        app_data = app_row.iloc[0]
+        
+        # Structure the response with all 5 sections
+        sections = {
+            'Symmetric Algorithms': [],
+            'Asymmetric Algorithms': [],
+            'Hash Functions': [],
+            'MACs & KDFs': [],
+            'Post-Quantum Cryptography': []
+        }
+        
+        # Process each section
+        for section in sections.keys():
+            if section in app_data and not pd.isna(app_data[section]):
+                algorithms = parse_algorithms(app_data[section])
+                
+                for algo in algorithms:
+                    algo_details = get_algorithm_details(algo)
+                    sections[section].append(algo_details)
+        
+        return {
+            "status": "success",
+            "application": application_name,
+            "cryptographic_profile": sections,
+            "summary": {
+                "total_algorithms": sum(len(algos) for algos in sections.values()),
+                "sections_with_algorithms": len([s for s in sections.values() if s]),
+                "sections_breakdown": {section: len(algos) for section, algos in sections.items()}
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving application details: {str(e)}")
+
+# ENDPOINT 6: Application section details
+@app.get("/applications/{application_name}/section/{section_name}")
+def get_application_section(application_name: str, section_name: str):
+    """Get algorithms for a specific section of an application"""
+    try:
+        if applications_df.empty:
+            raise HTTPException(status_code=404, detail="Applications data not available. Check if data4.csv exists.")
+            
+        # Validate section name
+        valid_sections = ['Symmetric Algorithms', 'Asymmetric Algorithms', 'Hash Functions', 'MACs & KDFs', 'Post-Quantum Cryptography']
+        if section_name not in valid_sections:
+            raise HTTPException(status_code=400, detail=f"Invalid section. Valid sections: {valid_sections}")
+        
+        # Find the application
+        app_row = applications_df[applications_df['Application'] == application_name]
+        if app_row.empty:
+            raise HTTPException(status_code=404, detail=f"Application '{application_name}' not found")
+        
+        app_data = app_row.iloc[0]
+        algorithms_data = []
+        
+        if section_name in app_data and not pd.isna(app_data[section_name]):
+            algorithms = parse_algorithms(app_data[section_name])
+            
+            for algo in algorithms:
+                algo_details = get_algorithm_details(algo)
+                algorithms_data.append(algo_details)
+        
+        return {
+            "status": "success",
+            "application": application_name,
+            "section": section_name,
+            "algorithms": algorithms_data,
+            "count": len(algorithms_data)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving section details: {str(e)}")
+
+# ENDPOINT 7: Algorithm information
+@app.get("/algorithms/{algorithm_name}")
+def get_algorithm_info(algorithm_name: str):
+    """Get detailed information about a specific algorithm"""
+    try:
+        algo_details = get_algorithm_details(algorithm_name)
+        
+        if algo_details['section'] == 'Unknown':
+            raise HTTPException(status_code=404, detail=f"Algorithm '{algorithm_name}' not found in database")
+        
+        return {
+            "status": "success",
+            "algorithm": algo_details
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving algorithm details: {str(e)}")
+
+# ENDPOINT 8: Search algorithms
+@app.get("/search/algorithms")
+def search_algorithms(
+    section: Optional[str] = None,
+    status: Optional[str] = None,
+    pqc_status: Optional[str] = None,
+    classical_recommended: Optional[bool] = None,
+    quantum_recommended: Optional[bool] = None
+):
+    """Search algorithms based on various criteria"""
+    try:
+        if not algorithm_lookup:
+            raise HTTPException(status_code=404, detail="Algorithm lookup data not available. Check if data3.csv exists.")
+            
+        filtered_algorithms = []
+        
+        for algo_name, details in algorithm_lookup.items():
+            # Apply filters
+            if section and details['section'] != section:
+                continue
+            if status and details['status_today'] != status:
+                continue
+            if pqc_status and details['pqc_status'] != pqc_status:
+                continue
+            if classical_recommended is not None:
+                if str(details['classical_recommended']).lower() != str(classical_recommended).lower():
+                    continue
+            if quantum_recommended is not None:
+                if str(details['quantum_recommended']).lower() != str(quantum_recommended).lower():
+                    continue
+            
+            filtered_algorithms.append(details)
+        
+        return {
+            "status": "success",
+            "count": len(filtered_algorithms),
+            "algorithms": filtered_algorithms
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error searching algorithms: {str(e)}")
+
+# ENDPOINT 9: Overview statistics
+@app.get("/stats/overview")
+def get_overview_stats():
+    """Get overall statistics about applications and algorithms"""
+    try:
+        if applications_df.empty or not algorithm_lookup:
+            raise HTTPException(status_code=404, detail="Required data files not available.")
+            
+        # Application stats
+        total_apps = len(applications_df)
+        
+        # Algorithm stats
+        total_algorithms = len(algorithm_lookup)
+        sections_count = {}
+        status_count = {}
+        pqc_status_count = {}
+        
+        for details in algorithm_lookup.values():
+            # Count by section
+            section = details['section']
+            sections_count[section] = sections_count.get(section, 0) + 1
+            
+            # Count by status
+            status = details['status_today']
+            status_count[status] = status_count.get(status, 0) + 1
+            
+            # Count by PQC status
+            pqc_status = details['pqc_status']
+            pqc_status_count[pqc_status] = pqc_status_count.get(pqc_status, 0) + 1
+        
+        return {
+            "status": "success",
+            "overview": {
+                "total_applications": total_apps,
+                "total_algorithms": total_algorithms,
+                "algorithms_by_section": sections_count,
+                "algorithms_by_status": status_count,
+                "algorithms_by_pqc_status": pqc_status_count
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating overview stats: {str(e)}")
+
+# ENDPOINT 10: Reload data
+@app.post("/admin/reload")
+def reload_data():
+    """Reload CSV data (useful for development)"""
+    try:
+        global applications_df, algorithm_lookup
+        applications_df, algorithm_lookup = load_csv_data()
+        return {"status": "success", "message": "Data reloaded successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reloading data: {str(e)}")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,0 +1,67 @@
+Section,Algorithm_Name,Category,Variant,Purpose,Usage_Context,Status_Today,PQC_Status,Priority,Classical_Recommended,Quantum_Recommended,NIST_Reference,Notes
+Symmetric Algorithms,AES-128-CBC,Symmetric,128-bit,Encryption,"TLS, SSH, VPN, File Encryption",Strong,Safe,Medium,yes,yes,"FIPS 197, RFC 5246",CBC mode is secure when IV and padding are properly managed.
+Symmetric Algorithms,AES-128-GCM,Symmetric,128-bit,Authenticated Encryption,"TLS, SSH, VPN, File Encryption",Strong,Safe,High,yes,yes,"FIPS 197, RFC 5288",GCM provides both confidentiality and integrity; preferred over CBC.
+Symmetric Algorithms,AES-128-CTR,Symmetric,128-bit,Encryption,"TLS, VPN, File Encryption",Strong,Safe,Medium,yes,yes,FIPS 197,Stream cipher mode; requires unique counter per message.
+Symmetric Algorithms,AES-128-CCM,Symmetric,128-bit,Authenticated Encryption,"TLS, IoT, Wireless Protocols",Strong,Safe,Medium,yes,yes,"FIPS 197, RFC 3610",CCM provides confidentiality and integrity; nonce must be unique.
+Symmetric Algorithms,AES-256-CBC,Symmetric,256-bit,Encryption,"TLS, SSH, VPN, File Encryption",Strong,Safe,Medium,yes,yes,"FIPS 197, RFC 5246",CBC mode; secure with proper IV and padding.
+Symmetric Algorithms,AES-256-GCM,Symmetric,256-bit,Authenticated Encryption,"TLS, SSH, VPN, File Encryption",Strong,Safe,High,yes,yes,"FIPS 197, RFC 5288",GCM provides both confidentiality and integrity; preferred.
+Symmetric Algorithms,AES-256-CTR,Symmetric,256-bit,Encryption,"TLS, VPN, File Encryption",Strong,Safe,Medium,yes,yes,FIPS 197,Stream cipher mode; requires unique counter per message.
+Symmetric Algorithms,AES-256-CCM,Symmetric,256-bit,Authenticated Encryption,"TLS, IoT, Wireless Protocols",Strong,Safe,Medium,yes,yes,"FIPS 197, RFC 3610",CCM provides confidentiality and integrity; nonce must be unique.
+Symmetric Algorithms,3DES-168,Symmetric,168-bit,Encryption,"Legacy TLS, VPN",Weak,Safe,High,no,no,FIPS 46-3,Legacy algorithm; avoid in new systems.
+Symmetric Algorithms,DES-56,Symmetric,56-bit,Encryption,Legacy Systems,Insecure,Safe,High,no,no,FIPS 46-3,Broken classically; do not use.
+Symmetric Algorithms,RC4-128,Symmetric,128-bit,Stream Cipher,"Legacy TLS, RDP",Insecure,Safe,High,no,no,RFC 7465,Known vulnerabilities; deprecated.
+Symmetric Algorithms,RC5-128,Symmetric,128-bit,Encryption,Legacy Systems,Weak,Safe,High,no,no,RSA Laboratories RC5 Specification,Legacy algorithm; rarely used.
+Symmetric Algorithms,Blowfish-128,Symmetric,128-bit,Encryption,"Legacy Systems, VPN",Weak,Safe,High,no,no,"Bruce Schneier, Applied Cryptography",Legacy; avoid in new deployments.
+Symmetric Algorithms,Camellia-128-CBC,Symmetric,128-bit,Encryption,"TLS, VPN",Strong,Safe,Low,yes,yes,RFC 4132,AES alternative; strong and recommended.
+Symmetric Algorithms,Camellia-256-CBC,Symmetric,256-bit,Encryption,"TLS, VPN",Strong,Safe,Low,yes,yes,RFC 4132,AES alternative; strong and recommended.
+Symmetric Algorithms,SEED-128-CBC,Symmetric,128-bit,Encryption,"Korean Government Applications, TLS, VPN",Strong,Safe,Low,yes,yes,KISA SEED Specification,Strong; mostly regional usage.
+Asymmetric Algorithms,RSA-1024,Asymmetric,1024-bit,Encryption / Digital Signatures,"TLS, SSH, PGP, S/MIME",Weak,Weak,High,no,no,"FIPS 186-4, RFC 8017",Vulnerable to classical factoring attacks; not recommended.
+Asymmetric Algorithms,RSA-2048,Asymmetric,2048-bit,Encryption / Digital Signatures,"TLS, SSH, PGP, S/MIME",Medium,Weak,High,yes,no,"FIPS 186-4, RFC 8017",Currently secure classically; vulnerable to Shor's algorithm.
+Asymmetric Algorithms,RSA-3072,Asymmetric,3072-bit,Encryption / Digital Signatures,"TLS, SSH, PGP, S/MIME",Strong,Weak,Medium,yes,no,"FIPS 186-4, RFC 8017",Strong classically; Shor's algorithm threatens quantum security.
+Asymmetric Algorithms,RSA-4096,Asymmetric,4096-bit,Encryption / Digital Signatures,"TLS, SSH, PGP, S/MIME",Strong,Weak,Medium,yes,no,"FIPS 186-4, RFC 8017",Strong classically; Shor's algorithm threatens quantum security.
+Asymmetric Algorithms,ECC-P-256,Asymmetric,256-bit,Key Exchange / Digital Signatures,"TLS, SSH, VPN, Code Signing",Strong,Weak,High,yes,no,"FIPS 186-4, RFC 5480",Quantum-vulnerable; use PQC for future-proof security.
+Asymmetric Algorithms,ECC-P-384,Asymmetric,384-bit,Key Exchange / Digital Signatures,"TLS, SSH, VPN, Code Signing",Strong,Weak,Medium,yes,no,"FIPS 186-4, RFC 5480",Quantum-vulnerable; stronger than P-256.
+Asymmetric Algorithms,ECC-P-521,Asymmetric,521-bit,Key Exchange / Digital Signatures,"TLS, SSH, VPN, Code Signing",Strong,Weak,Medium,yes,no,"FIPS 186-4, RFC 5480",Quantum-vulnerable; very strong classical security.
+Asymmetric Algorithms,ECC-Ed25519,Asymmetric,256-bit,Digital Signatures,"TLS, SSH, Code Signing",Strong,Weak,High,yes,no,RFC 8032,High-performance signature scheme; quantum-vulnerable.
+Asymmetric Algorithms,X25519,Asymmetric,256-bit,Key Exchange,"TLS 1.3, SSH, VPN",Strong,Weak,High,yes,no,RFC 7748,High-performance key exchange; quantum-vulnerable.
+Asymmetric Algorithms,Diffie-Hellman-2048,Asymmetric,2048-bit,Key Exchange,"TLS, VPN, SSH",Medium,Weak,High,yes,no,RFC 3526,Classically secure; quantum-vulnerable via Shor's algorithm.
+Asymmetric Algorithms,Diffie-Hellman-3072,Asymmetric,3072-bit,Key Exchange,"TLS, VPN, SSH",Strong,Weak,Medium,yes,no,RFC 3526,Stronger classical security; still quantum-vulnerable.
+Asymmetric Algorithms,DSA-1024,Asymmetric,1024-bit,Digital Signatures,"TLS Certificates, Code Signing",Weak,Weak,High,no,no,FIPS 186-4,Weak classically; do not use for new systems.
+Asymmetric Algorithms,DSA-2048,Asymmetric,2048-bit,Digital Signatures,"TLS Certificates, Code Signing",Medium,Weak,Medium,yes,no,FIPS 186-4,Classically secure; quantum-vulnerable.
+Hash Functions,MD5,Hash,128-bit,Data Integrity / Checksums,"Legacy TLS, File Checksums",Insecure,Weak,High,no,no,RFC 1321,Collision attacks exist; should not be used.
+Hash Functions,SHA-1,Hash,160-bit,Data Integrity / Digital Signatures,"TLS Certificates, Legacy SSH, PGP",Weak,Weak,High,no,no,"FIPS 180-4, RFC 3174",Collision attacks possible; being phased out.
+Hash Functions,SHA-224,Hash,224-bit,Data Integrity / Signatures,"TLS, File Integrity",Strong,Medium,Medium,yes,no,FIPS 180-4,Quantum attacks reduce effective strength by half (Grover).
+Hash Functions,SHA-256,Hash,256-bit,Data Integrity / Signatures,"TLS, SSH, VPN, Blockchain",Strong,Medium,High,yes,no,FIPS 180-4,Quantum attacks reduce effective strength; still widely used.
+Hash Functions,SHA-384,Hash,384-bit,Data Integrity / Signatures,"TLS, VPN, File Integrity",Strong,Medium,Medium,yes,no,FIPS 180-4,Quantum attacks reduce effective strength by half.
+Hash Functions,SHA-512,Hash,512-bit,Data Integrity / Signatures,"TLS, VPN, Blockchain",Strong,Medium,High,yes,no,FIPS 180-4,Quantum attacks reduce effective strength; strong against classical attacks.
+Hash Functions,SHA3-224,Hash,224-bit,Data Integrity / Signatures,"TLS, File Integrity",Strong,Medium,Medium,yes,no,FIPS 202,Quantum attacks reduce strength by half.
+Hash Functions,SHA3-256,Hash,256-bit,Data Integrity / Signatures,"TLS, SSH, File Integrity",Strong,Medium,High,yes,no,FIPS 202,Quantum attacks reduce strength by half.
+Hash Functions,SHA3-384,Hash,384-bit,Data Integrity / Signatures,"TLS, VPN, File Integrity",Strong,Medium,Medium,yes,no,FIPS 202,Quantum attacks reduce effective strength by half.
+Hash Functions,SHA3-512,Hash,512-bit,Data Integrity / Signatures,"TLS, VPN, Blockchain",Strong,Medium,High,yes,no,FIPS 202,Quantum attacks reduce effective strength by half.
+Hash Functions,HMAC-MD5,MAC,128-bit,Message Authentication,"Legacy TLS, Legacy Applications",Insecure,Weak,High,no,no,RFC 2104,MD5-based HMAC inherits MD5 weaknesses; avoid.
+Hash Functions,HMAC-SHA1,MAC,160-bit,Message Authentication,"TLS, VPN, SSH (legacy)",Weak,Weak,High,no,no,RFC 2104,Better than plain SHA1; still recommended to migrate to SHA2/3.
+Hash Functions,HMAC-SHA256,MAC,256-bit,Message Authentication,"TLS, SSH, VPN, File Integrity",Strong,Medium,High,yes,no,RFC 2104,Recommended for modern applications; quantum attacks reduce strength by half.
+Hash Functions,HMAC-SHA512,MAC,512-bit,Message Authentication,"TLS, SSH, VPN, File Integrity",Strong,Medium,High,yes,no,RFC 2104,Recommended; strong against classical attacks.
+MACs & KDFs,CMAC-AES-128,MAC,128-bit,Message Authentication,"TLS, VPN, File Integrity",Strong,Safe,High,yes,yes,"NIST SP 800-38B, FIPS 197",AES-based MAC; strong against classical and quantum attacks.
+MACs & KDFs,CMAC-AES-256,MAC,256-bit,Message Authentication,"TLS, VPN, File Integrity",Strong,Safe,High,yes,yes,"NIST SP 800-38B, FIPS 197",AES-based MAC; strong against classical and quantum attacks.
+MACs & KDFs,PBKDF2-HMAC-SHA256,KDF,Variable output,Password-Based Key Derivation,"File Encryption, TLS PSK, Password Storage",Strong,Medium,High,yes,no,"NIST SP 800-132, RFC 8018",Adjust iteration count for security; quantum attacks reduce strength.
+MACs & KDFs,HKDF-SHA256,KDF,Variable output,Key Derivation,"TLS 1.3, SSH, VPN",Strong,Medium,High,yes,no,RFC 5869,Widely used; quantum attacks reduce effective strength by half.
+MACs & KDFs,Argon2id,KDF,Variable output,Password-Based Key Derivation,"Password Storage, File Encryption",Strong,Medium,High,yes,no,Password Hashing Competition,Memory-hard; resistant to GPU/ASIC attacks; quantum attacks reduce effective strength.
+MACs & KDFs,bcrypt,KDF,Variable output,Password-Based Key Derivation,Password Storage,Strong,Medium,High,yes,no,OpenBSD bcrypt specification,Time-consuming hash for passwords; quantum attacks reduce effective strength.
+MACs & KDFs,scrypt,KDF,Variable output,Password-Based Key Derivation,"Password Storage, File Encryption",Strong,Medium,High,yes,no,Tarsnap scrypt specification,Memory-hard and CPU-hard; quantum attacks reduce effective strength.
+MACs & KDFs,AES-GCM,AEAD,128-bit / 256-bit,Authenticated Encryption,"TLS, SSH, VPN, File Encryption",Strong,Safe,High,yes,yes,"FIPS 197, RFC 5288",Combines confidentiality and integrity; recommended mode for AES.
+MACs & KDFs,AES-CCM,AEAD,128-bit / 256-bit,Authenticated Encryption,"TLS, IoT, Wireless Protocols",Strong,Safe,Medium,yes,yes,"FIPS 197, RFC 3610",AEAD mode; nonce must be unique per message.
+MACs & KDFs,ChaCha20-Poly1305,AEAD,256-bit,Authenticated Encryption,"TLS 1.3, WireGuard VPN, Mobile Apps",Strong,Safe,Medium,yes,yes,RFC 8439,High performance on devices without AES acceleration; AEAD mode.
+Post-Quantum Cryptography,Kyber-512,PQC KEM,Level 1,Key Encapsulation / Encryption,"TLS 1.3, VPN, Secure Email",Strong,Standardized,High,yes,yes,NIST PQC Standardization: Kyber,Level 1 security; NIST recommended for standardization.
+Post-Quantum Cryptography,Kyber-768,PQC KEM,Level 3,Key Encapsulation / Encryption,"TLS 1.3, VPN, Secure Email",Strong,Standardized,High,yes,yes,NIST PQC Standardization: Kyber,Level 3 security; NIST recommended for standardization.
+Post-Quantum Cryptography,Kyber-1024,PQC KEM,Level 5,Key Encapsulation / Encryption,"TLS 1.3, VPN, Secure Email",Strong,Standardized,High,yes,yes,NIST PQC Standardization: Kyber,Level 5 security; NIST recommended for standardization.
+Post-Quantum Cryptography,Dilithium-2,PQC Digital Signature,Level 2,Digital Signatures,"TLS Certificates, Code Signing, Email Signing",Strong,Standardized,High,yes,yes,NIST PQC Standardization: Dilithium,Level 2 security; standardized for NIST PQC.
+Post-Quantum Cryptography,Dilithium-3,PQC Digital Signature,Level 3,Digital Signatures,"TLS Certificates, Code Signing, Email Signing",Strong,Standardized,High,yes,yes,NIST PQC Standardization: Dilithium,Level 3 security; standardized for NIST PQC.
+Post-Quantum Cryptography,Dilithium-5,PQC Digital Signature,Level 5,Digital Signatures,"TLS Certificates, Code Signing, Email Signing",Strong,Standardized,High,yes,yes,NIST PQC Standardization: Dilithium,Level 5 security; standardized for NIST PQC.
+Post-Quantum Cryptography,Falcon-512,PQC Digital Signature,Level 1,Digital Signatures,"TLS Certificates, Code Signing, Email Signing",Strong,Standardized,Medium,yes,yes,NIST PQC Standardization: Falcon,Smaller signature size; Level 1 security; standardized.
+Post-Quantum Cryptography,Falcon-1024,PQC Digital Signature,Level 5,Digital Signatures,"TLS Certificates, Code Signing, Email Signing",Strong,Standardized,Medium,yes,yes,NIST PQC Standardization: Falcon,Higher security level; standardized.
+Post-Quantum Cryptography,SPHINCS+-128f,PQC Digital Signature,Level 1,Digital Signatures,"TLS Certificates, Code Signing",Strong,Standardized,Medium,yes,yes,NIST PQC Standardization: SPHINCS+,Stateless hash-based signatures; larger signatures; standardized.
+Post-Quantum Cryptography,SPHINCS+-192f,PQC Digital Signature,Level 3,Digital Signatures,"TLS Certificates, Code Signing",Strong,Standardized,Medium,yes,yes,NIST PQC Standardization: SPHINCS+,Stateless hash-based signatures; larger signatures; standardized.
+Post-Quantum Cryptography,SPHINCS+-256f,PQC Digital Signature,Level 5,Digital Signatures,"TLS Certificates, Code Signing",Strong,Standardized,Medium,yes,yes,NIST PQC Standardization: SPHINCS+,Stateless hash-based signatures; largest security level; standardized.
+Post-Quantum Cryptography,NTRUEncrypt,PQC KEM,Candidate,Key Encapsulation / Encryption,"Experimental TLS, VPN, Secure Email",Medium,Candidate,Low,yes,yes,NTRU NIST PQC submission,Candidate KEM; not finalized by NIST yet.
+Post-Quantum Cryptography,BIKE,PQC KEM,Candidate,Key Encapsulation / Encryption,"Experimental TLS, VPN",Medium,Candidate,Low,yes,yes,NIST PQC submission: BIKE,Candidate KEM; not yet standardized.

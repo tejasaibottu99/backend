@@ -1,0 +1,16 @@
+Application,Symmetric Algorithms,Asymmetric Algorithms,Hash Functions,MACs & KDFs,Post-Quantum Cryptography
+Epic EHR Backend,"AES-256-GCM, AES-128-CBC","RSA-3072, ECC-P-384","SHA-512, SHA3-256","CMAC-AES-256, HKDF-SHA256","Kyber-768, Dilithium-3"
+Philips PACS Server,AES-128-GCM,ECC-Ed25519,SHA-256,Argon2id,
+Amwell Video Gateway,"AES-256-CTR, ChaCha20-Poly1305","X25519, RSA-2048",SHA3-384,"PBKDF2-HMAC-SHA256, AES-GCM",Falcon-512
+SAS Analytics Workbench,AES-128-CCM,"Diffie-Hellman-3072, ECC-P-521","SHA-384, SHA3-512",CMAC-AES-128,"Kyber-1024, SPHINCS+-192f"
+Azure API Gateway,"AES-256-CBC, AES-128-CTR",RSA-4096,SHA-256,"HKDF-SHA256, bcrypt",Dilithium-5
+Oracle Claims Processor,AES-256-GCM,"ECC-P-256, DSA-2048","SHA-512, SHA3-256","AES-CCM, scrypt","Kyber-512, Falcon-1024"
+Cerner Patient Portal,"Camellia-128-CBC, AES-128-GCM",Diffie-Hellman-2048,SHA3-384,CMAC-AES-256,
+Teladoc Labsian Dashboard,AES-256-CCM,X25519,"SHA-384, SHA3-512",PBKDF2-HMAC-SHA256,"Dilithium-2, SPHINCS+-128f"
+REDCap Data Engine,"AES-128-CBC, SEED-128-CBC","RSA-3072, ECC-P-384, ECC-Ed25519",SHA-256,Argon2id,Kyber-768
+AWS S3 Data Lake,AES-256-GCM,ECC-P-521,SHA3-256,"HKDF-SHA256, AES-GCM","Falcon-512, Dilithium-3"
+Epic Resolute Billing,"AES-128-GCM, Camellia-256-CBC",RSA-2048,"SHA-512, SHA3-384",CMAC-AES-128,SPHINCS+-256f
+Allscripts Labsal Module,AES-256-CTR,"Diffie-Hellman-3072, DSA-2048",SHA-384,"bcrypt, AES-CCM",
+Siemens Syngo Gateway,"AES-128-CCM, ChaCha20-Poly1305",ECC-P-256,SHA3-512,scrypt,"Kyber-1024, Dilithium-5, Falcon-1024"
+Zoom Health API,AES-256-CBC,X25519,"SHA-256, SHA3-256",PBKDF2-HMAC-SHA256,Dilithium-2
+GE Centricity RIS,"AES-128-GCM, AES-256-GCM, SEED-128-CBC","RSA-4096, ECC-P-521",SHA-512,"CMAC-AES-256, Argon2id","Kyber-512, SPHINCS+-192f"
